@@ -1,0 +1,4 @@
+# WooCommerce API configuration
+WOO_URL="http://XXX.com"
+CONSUMER_KEY="ck_XXXXXXXXXXX"
+CONSUMER_SECRET="cs_XXXXXXXXXX"
