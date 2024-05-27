@@ -1,14 +1,16 @@
 # WooCommerce Product Manager
 
-This project contains scripts to manage products in a WooCommerce store. It allows you to extract product data, upload it back to the store, and create a backup of the product data.
+This project contains scripts to manage products, categories, and tags in a WooCommerce store. It allows you to extract data, upload it back to the store, and create backups of the data.
 
 ## Features
 
 - Extract all product data from a WooCommerce store and save it to a CSV file.
-- Automatically create a timestamped backup of the CSV file for added security.
+- Extract product categories and tags and save them to CSV files.
+- Automatically create timestamped backups of the CSV files for added security.
 - Set backup files to read-only to prevent accidental deletion or modification.
-- Upload product data to the WooCommerce store.
-- Restore the last backup of the product data.
+- Upload product data, categories, and tags to the WooCommerce store.
+- Restore data from specific backup files.
+- Interactive menu to manage data extraction, upload, and restore backups.
 
 ## Setup
 
@@ -28,7 +30,7 @@ This project contains scripts to manage products in a WooCommerce store. It allo
 2. Create and activate a virtual environment:
     ```bash
     python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    source venv/bin/activate  
     ```
 
 3. Install the required dependencies:
@@ -67,20 +69,20 @@ This script fetches all product data from the WooCommerce store, saves it to a C
 python src/extract.py
 ```
 
-### Upload Products
+### Upload Data
 
-This script uploads product data to the WooCommerce store.
+This script uploads product data, categories, or tags to the WooCommerce store.
 
 ```bash
-python src/upload.py
+python src/upload.py [products|categories|tags]
 ```
 
-### Create Backup
+### Restore Backup
 
-Although the `extract.py` script already creates a backup when run, you can use the `backup.py` script independently if needed.
+Restore a backup of the product data, categories, or tags.
 
 ```bash
-python src/backup.py
+python src/restore.py
 ```
 
 ## Detailed Script Descriptions
@@ -89,33 +91,44 @@ python src/backup.py
 
 - **Fetch Product Data:** The script connects to the WooCommerce API and retrieves all product data.
 - **Save to CSV:** The fetched product data is saved to `data/products.csv`.
-- **Create Backup:** A timestamped backup of the CSV file is created in the `data/` directory. The backup file is named `products_backup_YYYYMMDD_HHMMSS.csv` and is set to read-only to prevent accidental deletion or modification.
+- **Create Backup:** A timestamped backup of the CSV file is created in the `data/backups/products/` directory. The backup file is named `products_backup_YYYYMMDD_HHMMSS.csv` and is set to read-only to prevent accidental deletion or modification.
 
 ### `upload.py`
 
-- **Upload Products:** This script uploads product data to the WooCommerce store. It reads product data from a file and uses the WooCommerce API to update the store.
+- **Upload Products:** This script uploads product data to the WooCommerce store. It reads product data from `data/products.csv` and uses the WooCommerce API to update the store.
+- **Upload Categories:** This script uploads category data to the WooCommerce store. It reads category data from `data/categories.csv` and uses the WooCommerce API to update the store.
+- **Upload Tags:** This script uploads tag data to the WooCommerce store. It reads tag data from `data/tags.csv` and uses the WooCommerce API to update the store.
 
-### `backup.py`
+### `restore.py`
 
-- **Create Backup:** Independently create a backup of the current product data file. The backup file is stored in the `data/` directory with a timestamp in the filename.
+- **Restore Backup:** This script allows you to restore data from specific backup files. You can choose to restore products, categories, or tags from their respective backups.
 
 ## Project Structure
 
 ```
 woocommerce-product-manager/
 │
-├── src/
-│   ├── backup.py
-│   ├── config.py
-│   ├── extract.py
-│   ├── upload.py
-│   └── utils.py
+├───src/
+│   ├───backup.py
+│   ├───config.py
+│   ├───extract.py
+│   ├───upload.py
+│   ├───restore.py
+│   ├───utils.py
+│   └───__pycache__/
 │
-├── data/
-│   └── products.csv  # This directory will contain the product CSV and backup files
+├───data/
+│   ├───backups/
+│   │   ├───categories/
+│   │   ├───products/
+│   │   └───tags/
+│   ├───categories.csv
+│   ├───products.csv
+│   └───tags.csv
 │
-├── .gitignore
-├── README.md
-├── requirements.txt
-└── .env
+├───.gitignore
+├───main.py
+├───README.md
+├───requirements.txt
+└───.env
 ```

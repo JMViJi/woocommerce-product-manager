@@ -1,28 +1,30 @@
 import logging
 import os
 import pandas as pd
+from datetime import datetime
 from woocommerce import API
 from config import WOO_URL, CONSUMER_KEY, CONSUMER_SECRET
-from datetime import datetime
-
 
 # Logging configuration
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def get_wc_api():
-    """Create and return a WooCommerce API client instance."""
+
+def get_wc_api(timeout=50):
+    """Create and return a WooCommerce API client instance with a specified timeout."""
     return API(
         url=WOO_URL,
         consumer_key=CONSUMER_KEY,
         consumer_secret=CONSUMER_SECRET,
-        version="wc/v3"
+        version="wc/v3",
+        timeout=timeout
     )
 
 def get_variants(wc_api, product_id):
     """Fetch variants for a variable product."""
+    wc_api = get_wc_api()
     try:
         response = wc_api.get(f"products/{product_id}/variations")
-        response.raise_for_status()
+        #response.raise_for_status()
         return response.json()
     except Exception as e:
         logging.error(f"Error fetching variants for product {product_id}: {e}")
@@ -30,9 +32,9 @@ def get_variants(wc_api, product_id):
 
 def get_all_products():
     """Fetch all products from WooCommerce."""
-    wc_api = get_wc_api()
     all_products = []
     page = 1
+    wc_api = get_wc_api()
     while True:
         try:
             response = wc_api.get("products", params={"per_page": 100, "page": page})
@@ -71,7 +73,7 @@ def save_products_to_file(products, filename='data/products.csv'):
 def create_backup(original_file):
     """Create a backup of the CSV file with a timestamp in the filename."""
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    backup_filename = f"data/backups/products_backup_{timestamp}.csv"
+    backup_filename = f"data/backups/products/products_backup_{timestamp}.csv"
     logging.info(f"Creating backup of the file as {backup_filename}...")
     try:
         os.makedirs(os.path.dirname(backup_filename), exist_ok=True)
